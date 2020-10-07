@@ -67,6 +67,7 @@
     "name": "{{ template.name }}",
     {% if template.playbook is defined and template.playbook != "" %}
     "playbook": "{{ template.playbook }}",
+    {% else %}{% endif %}
     "project": "{{ template.project }}",
     {% if template.scm_branch is defined and template.scm_branch != "" %}
     "scm_branch": "{{ template.scm_branch }}",
