@@ -1,16 +1,40 @@
 {
+    {% if template.allow_simultaneous is defined and template.allow_simultaneous != "" %}
     "allow_simultaneous": {{ template.allow_simultaneous }},
+    {% else %}{% endif %}
+    {% if template.ask_credential_on_launch is defined and template.ask_credential_on_launch != "" %}
     "ask_credential_on_launch": {{ template.ask_credential_on_launch }},
+    {% else %}{% endif %}
+    {% if template.ask_diff_mode_on_launch is defined and template.ask_diff_mode_on_launch != "" %}
     "ask_diff_mode_on_launch": {{ template.ask_diff_mode_on_launch }},
+    {% else %}{% endif %}
+    {% if template.ask_inventory_on_launch is defined and template.ask_inventory_on_launch != "" %}
     "ask_inventory_on_launch": {{ template.ask_inventory_on_launch }},
+    {% else %}{% endif %}
+    {% if template.ask_limit_on_launch is defined and template.ask_limit_on_launch != "" %}
     "ask_limit_on_launch": {{ template.ask_limit_on_launch }},
+    {% else %}{% endif %}
+    {% if template.ask_scm_branch_on_launch is defined and template.ask_scm_branch_on_launch != "" %}
     "ask_scm_branch_on_launch": {{ template.ask_scm_branch_on_launch }},
+    {% else %}{% endif %}
+    {% if template.ask_tags_on_launch is defined and template.ask_tags_on_launch != "" %}
     "ask_tags_on_launch": {{ template.ask_tags_on_launch }},
+    {% else %}{% endif %}
+    {% if template.ask_variables_on_launch is defined and template.ask_variables_on_launch != "" %}
     "ask_variables_on_launch": {{ template.ask_tags_on_launch }},
+    {% else %}{% endif %}
+    {% if template.become_enabled is defined and template.become_enabled != "" %}
     "become_enabled": {{ template.become_enabled }},
+    {% else %}{% endif %}
+    {% if template.custom_virtualenv is defined and template.custom_virtualenv != "" %}
     "custom_virtualenv": "{{ template.custom_virtualenv }}",
+    {% else %}{% endif %}
+    {% if template.description is defined and template.description != "" %}
     "description": "{{ template.description }}",
+    {% else %}{% endif %}
+    {% if template.diff_mode is defined and template.diff_mode != "" %}
     "diff_mode": {{ template.diff_mode }}",
+    {% else %}{% endif %}
     {% if template.extra_vars is defined and template.extra_vars != "" %}
     "extra_vars": {
     {% for key,value in template.extra_vars %}
@@ -18,24 +42,57 @@
     {% endfor %}
     },
     {% else %}{% endif %}
+    {% if template.force_handlers is defined and template.force_handlers != "" %}
     "force_handlers": {{ template.force_handlers }},
+    {% else %}{% endif %}
+    {% if template.forks is defined and template.forks != "" %}
     "forks": {{ template.forks }},
+    {% else %}{% endif %}
+    {% if template.host_config_key is defined and template.host_config_key != "" %}
     "host_config_key": "{{ template.host_config_key }}",
+    {% else %}{% endif %}
     "inventory": "{{ inventory_id}}",
+    {% if template.job_slice_count is defined and template.job_slice_count != "" %}
     "job_slice_count": {{ template.job_slice_count }},
+    {% else %}{% endif %}
+    {% if template.job_tags is defined and template.job_tags != "" %}
     "job_tags": "{{ template.job_tags }}",
+    {% else %}{% endif %}
+    {% if template.job_type is defined and template.job_type != "" %}
     "job_type": {{ template.job_type }},
+    {% else %}{% endif %}
+    {% if template.limit is defined and template.limit != "" %}
     "limit": "{{ template.limit }}",
+    {% else %}{% endif %}
     "name": "{{ template.name }}",
+    {% if template.playbook is defined and template.playbook != "" %}
     "playbook": "{{ template.playbook }}",
     "project": "{{ template.project }}",
+    {% if template.scm_branch is defined and template.scm_branch != "" %}
     "scm_branch": "{{ template.scm_branch }}",
+    {% else %}{% endif %}
+    {% if template.skip_tags is defined and template.skip_tags != "" %}
     "skip_tags": "{{ template.skip_tags }}",
+    {% else %}{% endif %}
+    {% if template.start_at_task is defined and template.start_at_task != "" %}
     "start_at_task": "{{ template.start_at_task }}",
+    {% else %}{% endif %}
+    {% if template.survey_enabled is defined and template.survey_enabled != "" %}
     "survey_enabled": {{ template.survey_enabled }},
+    {% else %}{% endif %}
+    {% if template.timeout is defined and template.timeout != "" %}
     "timeout": {{ template.timeout }},
+    {% else %}{% endif %}
+    {% if template.use_fact_cache is defined and template.use_fact_cache != "" %}
     "use_fact_cache": {{ template.use_fact_cache }},
+    {% else %}{% endif %}
+    {% if template.verbosity is defined and template.verbosity != "" %}
     "verbosity": {{ template.verbosity }},
+    {% else %}{% endif %}
+    {% if template.webhook_credential is defined and template.webhook_credential != "" %}
     "webhook_credential": "{{ template.webhook_credential }}",
+    {% else %}{% endif %}
+    {% if template.webhook_service is defined and template.webhook_service != "" %}
     "webhook_service": "{{ template.webhook_service }}"
+    {% else %}{% endif %}
 }
