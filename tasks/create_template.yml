@@ -37,6 +37,9 @@
   retries: 5
   delay: 10
 
+- debug:
+    msg: "{{ response }}"
+
 - name: get template_id on status code 201
   set_fact:
     template_id: "{{ response.json.id }}"
