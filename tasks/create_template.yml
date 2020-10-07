@@ -1,6 +1,9 @@
 ---
 - include_vars: "{{ path }}"
 
+- debug:
+    msg: "{{ template.inventory }}"
+
 - name: get inventory_id
   block:
     - name: get inventory info
