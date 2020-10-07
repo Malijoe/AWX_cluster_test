@@ -8,6 +8,9 @@
   register: template_contents
   when: template_directory is defined and template_directory != ""
 
+- debug:
+    msg: "{{ template_contents }}"
+
 - set_fact:
     template_config_paths: "{{ template_contents.files | map(attribute='path') | list }}"
   when: template_contents is defined
