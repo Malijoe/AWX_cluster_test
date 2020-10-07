@@ -78,7 +78,7 @@
         msg: "{{ response_message }}"
       when: response_message.__all__ is not defined or ((response_message.__all__ is search('already exists')) != True)
 
-  when: info.status == 400
+  when: response.status == 400
 
 - name: create survey when it's defined
   include_tasks: create_survey.yml
