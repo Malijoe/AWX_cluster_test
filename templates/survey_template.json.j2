@@ -1,0 +1,19 @@
+{
+  "description": "{{ template.survey.description }}",
+  "name": "{{ template.survey.name }}",
+  "spec": [
+    {% for spec in template.survey.spec %}
+    {
+      "type": "{{ spec.type }}",
+      "question_name": "{{ spec.question_name }}",
+      "question_description": "{{ spec.question_description }}",
+      "variable": "{{ spec.variable }}",
+      "choices": {{ spec.choices }},{% if spec.min != ""%}
+      "min": {{spec.min }},{% else %}{% endif %}{% if spec.max != "" %}
+      "max": {{ spec.max }},{% else %}{% endif %}
+      "required": {{ spec.required }}{% if spec.default != "" %},
+      "default": "{{ spec.default }}"{% else %}{% endif %}
+    }{% if loop.last %}{%else %},{% endif %}
+    {% endfor %}
+  ]
+}

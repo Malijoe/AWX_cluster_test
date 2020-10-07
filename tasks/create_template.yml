@@ -1,0 +1,78 @@
+---
+
+- name: get inventory_id
+  block:
+    - name: get inventory info
+      uri:
+        url: "{{ awx_url }}/api/v2/inventories/"
+        method: GET
+        force_basic_auth: yes
+        user: "{{ awx_user }}"
+        password: "{{ awx_password }}"
+      register: inventories
+
+    - name: Get inventory id using name
+      set_fact:
+        inventory_id: "{{ inventories | json_query(\"json.results[?name=='\" + template.inventory + \"'].id\") | first }}"
+
+- name: template job_template
+  template:
+    src: jobTemplate_template.json.j2
+    dest: "{{ temp_dir }}/jobTemplate_template.json"
+    mode: '0777'
+
+- name: create template
+  uri:
+    url: "{{ awx_url }}/api/v2/job_templates/"
+    method: POST
+    force_basic_auth: yes
+    user: "{{ awx_user }}"
+    password: "{{ awx_password }}"
+    body_format: json
+    body: "{{ lookup('file', '{{temp_dir }}/jobTemplate_template.json') }}"
+    status_code: 201, 400
+  register: response
+  until: response.status == 201 or (response.json.__all__ is defined and response.json.__all__ is search('already exists'))
+  retries: 5
+  delay: 10
+
+- name: get template_id on status code 201
+  set_fact:
+    template_id: "{{ response.json.id }}"
+  when: response.status == 201
+
+- name: get template_id on status code 400
+  block:
+
+    - name: get response message
+      set_fact:
+        response_message: "{{ response.json }}"
+
+    - name: adjust for when project already exists
+      block:
+        - debug:
+            msg: "{{ response_message.__all__ }} Task will continue anyway"
+
+        - name: List templates
+          uri:
+            url: "{{ awx_url }}/api/v2/job_templates/"
+            method: GET
+            force_basic_auth: yes
+            user: "{{ awx_user }}"
+            password: "{{ awx_password }}"
+          register: tmps
+
+        - name: get project_id
+          set_fact:
+            template_id: "{{ tmps | json_query(\"json.results[?name=='\" + template.name + \"'].id\") | first }}"
+      when: response_message.__all__ is defined and response_message.__all__ is search('already exists')
+
+    - fail:
+        msg: "{{ response_message }}"
+      when: response_message.__all__ is not defined or ((response_message.__all__ is search('already exists')) != True)
+
+  when: info.status == 400
+
+- name: create survey when it's defined
+  include_tasks: create_survey.yml
+  when: template.survey is defined

@@ -1,0 +1,17 @@
+---
+- fail:
+    msg: "Please set the awx_url variable and try again"
+  when: awx_url is not defined
+
+- name: set temp_dir
+  set_fact:
+    temp_dir: /tmp/awx
+
+- name: create temporary directory
+  file:
+    path: "{{ temp_dir }}/"
+    state: directory
+    mode: '0777'
+
+- name: Create project
+  include_tasks: create_project.yml

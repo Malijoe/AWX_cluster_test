@@ -1,0 +1,106 @@
+---
+
+- name: get org_id
+  block:
+    - name: list organizations
+      uri:
+        url: "{{ awx_url }}/api/v2/organizations/"
+        method: GET
+        force_basic_auth: yes
+        user: "{{ awx_user }}"
+        password: "{{ awx_password }}"
+      register: orgs
+
+    - name: retrieve org id for project.organization
+      set_fact:
+        org_id: "{{ orgs | json_query(\"json.results[?name=='\" + project.organization + \"'].id\") | first }}"
+
+- name: get credential_id
+  block:
+    - name: list credentials
+      uri:
+        url: "{{ awx_url }}/api/v2/credentials"
+        method: GET
+        force_basic_auth: yes
+        user: "{{ awx_user }}"
+        password: "{{ awx_password }}"
+      register: creds
+
+    - debug:
+        msg: "{{ creds }}"
+
+    - name: retrieve cred_id for project.credentials
+      set_fact:
+        cred_id: "{{ creds | json_query(\"json.results[?name=='\" + project.credential + \"'].id\") | first }}"
+  when: project.credential is defined and project.credential != ""
+
+- name: create awx project
+  uri:
+    url: "{{ awx_url }}/api/v2/projects/"
+    method: POST
+    force_basic_auth: yes
+    user: "{{ awx_user }}"
+    password: "{{ awx_password }}"
+    body_format: json
+    body:
+      credential: "{{ cred_id }}"
+      custom_virtualenv: "{{ project.custom_virtualenv }}"
+      description: "{{ project.description }}"
+      local_path: "{{ project.local_path }}"
+      name: "{{ project.name }}"
+      organization: "{{ org_id }}"
+      scm_branch: "{{ project.scm_branch }}"
+      scm_clean: "{{ project.scm_clean }}"
+      scm_delete_on_update: "{{ project.scm_delete_on_update }}"
+      scm_type: "{{ project.scm_type }}"
+      scm_update_cache_timeout: "{{ project.scm_update_cache_timeout }}"
+      scm_update_on_launch: "{{ project.scm_update_on_launch }}"
+      scm_url: "{{ project.scm_url }}"
+      timeout: "{{ project.timeout }}"
+    status_code: 201, 400
+  register: info
+  when: org_id is defined
+
+- name: get project_id on status code 201
+  set_fact:
+    project_id: "{{ info.json.id }}"
+  when: info.status == 201
+
+- name: get project_id on status code 400
+  block:
+
+    - name: get response message
+      set_fact:
+        response_message: "{{ info.json }}"
+
+    - name: adjust for when project already exists
+      block:
+        - debug:
+            msg: "{{ response_message.__all__ }} Task will continue anyway"
+
+        - name: List projects
+          uri:
+            url: "{{ awx_url }}/api/v2/projects/"
+            method: GET
+            force_basic_auth: yes
+            user: "{{ awx_user }}"
+            password: "{{ awx_password }}"
+          register: prjs
+
+        - name: get project_id
+          set_fact:
+            project_id: "{{ prjs | json_query(\"json.results[?name=='\" + project.name + \"'].id\") | first }}"
+      when: response_message.__all__ is defined and response_message.__all__ is search('already exists')
+
+    - fail:
+        msg: "{{ response_message }}"
+      when: response_message.__all__ is not defined or ((response_message.__all__ is search('already exists')) != True)
+
+  when: info.status == 400
+
+- name: create templates
+  include_tasks: create_template.yml
+  loop: "{{ project.templates }}"
+  loop_control:
+    loop_var: template
+  when: project.templates is defined and (project.templates | length > 0)

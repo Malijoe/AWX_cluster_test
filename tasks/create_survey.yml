@@ -1,0 +1,24 @@
+---
+
+- name: template survey json
+  template:
+    src: survey_template.json.j2
+    dest: "{{ temp_dir}}/survey_template.json"
+    mode: '0777'
+
+- name: create survey
+  uri:
+    url: "{{ awx_url }}/api/v2/job_templates/{{ template_id }}/survey_spec/"
+    method: POST
+    force_basic_auth: yes
+    user: "{{ awx_user }}"
+    password: "{{ awx_password }}"
+    body_format: json
+    body: "{{ lookup('file', '{{temp_dir }}/survey_template.json') }}"
+    status_code: 200, 201, 400
+  register: survey_response
+
+- debug:
+    msg: "{{ survey_response }}"
+
+

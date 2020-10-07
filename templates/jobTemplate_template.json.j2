@@ -1,0 +1,41 @@
+{
+    "allow_simultaneous": {{ template.allow_simultaneous }},
+    "ask_credential_on_launch": {{ template.ask_credential_on_launch }},
+    "ask_diff_mode_on_launch": {{ template.ask_diff_mode_on_launch }},
+    "ask_inventory_on_launch": {{ template.ask_inventory_on_launch }},
+    "ask_limit_on_launch": {{ template.ask_limit_on_launch }},
+    "ask_scm_branch_on_launch": {{ template.ask_scm_branch_on_launch }},
+    "ask_tags_on_launch": {{ template.ask_tags_on_launch }},
+    "ask_variables_on_launch": {{ template.ask_tags_on_launch }},
+    "become_enabled": {{ template.become_enabled }},
+    "custom_virtualenv": "{{ template.custom_virtualenv }}",
+    "description": "{{ template.description }}",
+    "diff_mode": {{ template.diff_mode }}",
+    {% if template.extra_vars is defined and template.extra_vars != "" %}
+    "extra_vars": {
+    {% for key,value in template.extra_vars %}
+        "{{ key }}" : "{{ value }}"
+    {% endfor %}
+    },
+    {% else %}{% endif %}
+    "force_handlers": {{ template.force_handlers }},
+    "forks": {{ template.forks }},
+    "host_config_key": "{{ template.host_config_key }}",
+    "inventory": "{{ inventory_id}}",
+    "job_slice_count": {{ template.job_slice_count }},
+    "job_tags": "{{ template.job_tags }}",
+    "job_type": {{ template.job_type }},
+    "limit": "{{ template.limit }}",
+    "name": "{{ template.name }}",
+    "playbook": "{{ template.playbook }}",
+    "project": "{{ template.project }}",
+    "scm_branch": "{{ template.scm_branch }}",
+    "skip_tags": "{{ template.skip_tags }}",
+    "start_at_task": "{{ template.start_at_task }}",
+    "survey_enabled": {{ template.survey_enabled }},
+    "timeout": {{ template.timeout }},
+    "use_fact_cache": {{ template.use_fact_cache }},
+    "verbosity": {{ template.verbosity }},
+    "webhook_credential": "{{ template.webhook_credential }}",
+    "webhook_service": "{{ template.webhook_service }}"
+}
