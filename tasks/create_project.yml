@@ -43,20 +43,11 @@
     password: "{{ awx_password }}"
     body_format: json
     body:
-      credential: "{{ cred_id }}"
-      custom_virtualenv: "{{ project.custom_virtualenv }}"
-      description: "{{ project.description }}"
-      local_path: "{{ project.local_path }}"
       name: "{{ project.name }}"
       organization: "{{ org_id }}"
       scm_branch: "{{ project.scm_branch }}"
-      scm_clean: "{{ project.scm_clean }}"
-      scm_delete_on_update: "{{ project.scm_delete_on_update }}"
       scm_type: "{{ project.scm_type }}"
-      scm_update_cache_timeout: "{{ project.scm_update_cache_timeout }}"
-      scm_update_on_launch: "{{ project.scm_update_on_launch }}"
       scm_url: "{{ project.scm_url }}"
-      timeout: "{{ project.timeout }}"
     status_code: 201, 400
   register: info
   when: org_id is defined
