@@ -38,7 +38,7 @@
   delay: 10
 
 - debug:
-    msg: "{{ response.status }}"
+    msg: "{{ response }}"
   when: response.status == 201
 
 - name: get template_id on status code 201
