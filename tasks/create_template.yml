@@ -40,6 +40,9 @@
 - debug:
     msg: "{{ response }}"
 
+- debug:
+    msg: "{{ response.status }}"
+
 - name: get template_id on status code 201
   set_fact:
     template_id: "{{ response.json.id }}"
