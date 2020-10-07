@@ -39,6 +39,7 @@
 
 - debug:
     msg: "{{ response.status }}"
+  when: response.status == 201
 
 - name: get template_id on status code 201
   set_fact:
