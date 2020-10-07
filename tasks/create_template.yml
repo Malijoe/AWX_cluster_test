@@ -38,7 +38,7 @@
   delay: 10
 
 - debug:
-    msg: "{{ response }}"
+    msg: "{{ response.status }}"
 
 - name: get template_id on status code 201
   set_fact:
