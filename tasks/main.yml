@@ -5,16 +5,29 @@
 - name: get contents of template folder
   find:
     path: "{{ template_directory }}"
-    recurse: yes
-  register: template_contents
+  register: template_paths
   when: template_directory is defined and template_directory != ""
 
+- name: check for templates with surveys
+  find:
+    path: "{{ template_directory }}"
+    file_type: directory
+  register: survey_paths
+  when: template_directory is defined and template_directory != ""
+
+- set_fact:
+    template_with_surveys: "{{ survey_paths.directories | map(attribute='path') | list }}"
+  when: survey_paths is defined
+
 - debug:
-    msg: "{{ template_contents }}"
+    msg: "{{ survey_paths }}"
+
+- debug:
+    msg: "{{ template_paths }}"
 
 - set_fact:
     template_config_paths: "{{ template_contents.files | map(attribute='path') | list }}"
-  when: template_contents is defined
+  when: template_paths is defined
 
 - fail:
     msg: "Please set the awx_url variable and try again"
