@@ -26,7 +26,7 @@
   when: survey_paths is defined
 
 - set_fact:
-    template_config_paths: "{{ template_contents.files | map(attribute='path') | list }}"
+    template_config_paths: "{{ template_paths.files | map(attribute='path') | list }}"
   when: template_paths is defined
 
 - fail:
