@@ -33,7 +33,7 @@
 
 - name: set project name as git repo name
   set_fact:
-    project_name: "{{ 'https://github.com/Malijoe/AWX_test_playbook.git' | regex_search('([^\/]+)(?=\.\w+$)') }}"
+    project_name: "{{ 'foobar' | regex_search('(foo)') }}"
 
 - debug:
     msg: "{{ project_name }}"
