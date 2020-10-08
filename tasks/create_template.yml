@@ -21,7 +21,7 @@
     - set_fact:
         template_path: "{{ item }}"
       loop: "{{ path_list }}"
-      when: item | search("_template.yml")
+      when: item | regex_search("_template.yml")
 
     - debug:
         msg: "{{ template_path }}"
