@@ -19,7 +19,9 @@
         path_list: "{{ paths.files | map(attribute='path') | list }}"
 
     - set_fact:
-        template_path: "{{ path_list | regex_search('_template\.yml') }}"
+        template_path: "{{ item }}"
+      loop: "{{ path_list }}"
+      when: item | search("_template.yml")
 
     - debug:
         msg: "{{ template_path }}"
