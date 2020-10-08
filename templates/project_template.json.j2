@@ -23,7 +23,7 @@
     {% if project.scm_delete_on_update is defined and project.scm_delete_on_update != "" %}
     "scm_delete_on_update": {{ project.scm_delete_on_update }},
     {% else %}{% endif %}
-    "scm_type": {{ project.scm_type }},
+    "scm_type": "{{ project.scm_type }}",
     {% if project.scm_update_on_launch is defined and project.scm_update_on_launch != "" %}
     "scm_update_on_launch": {{ project.scm_update_on_launch }},
     {% else %}{% endif %}

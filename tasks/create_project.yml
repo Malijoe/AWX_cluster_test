@@ -52,6 +52,9 @@
   register: info
   when: org_id is defined
 
+- debug:
+    msg: "{{ info }}"
+
 - name: get project_id on status code 201
   set_fact:
     project_id: "{{ info.json.id }}"
