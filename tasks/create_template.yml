@@ -6,9 +6,6 @@
   block:
     - set_fact:
         template_path: "{{ path }}"
-
-    - include_vars: "{{ path }}"
-
   when: with_survey == False
 
 - name: get template vars with surveys
@@ -37,6 +34,8 @@
     - debug:
         msg: "{{ survey_path }}"
   when: with_survey == True
+
+- include_tasks: template_path
 
 - name: get inventory_id
   block:
@@ -119,4 +118,4 @@
 
 - name: create survey when it's defined
   include_tasks: create_survey.yml
-  when: template.survey is defined
+  when: with_survey == True and survey_path is defined
