@@ -89,9 +89,28 @@
 
   when: info.status == 400
 
-- name: create templates
-  include_tasks: create_template.yml
-  loop: "{{ template_config_paths }}"
-  loop_control:
-    loop_var: path
+- name: create templates w/o surveys
+  block:
+    - set_fact:
+        with_survey: False
+
+    - name: create templates
+      include_tasks: create_template.yml
+      loop: "{{ template_config_paths }}"
+      loop_control:
+        loop_var: path
+
   when: template_config_paths is defined
+
+- name: create templates w/ surveys
+  block:
+    - set_fact:
+        with_survey: True
+
+    - name: create templates
+      include_tasks: create_template.yml
+      loop: "{{ templates_with_surveys }}"
+      loop_control:
+        loop_var: path
+
+  when: templates_with_surveys is defined

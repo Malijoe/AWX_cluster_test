@@ -1,8 +1,26 @@
 ---
-- include_vars: "{{ path }}"
+- name: get template vars without surveys
+  block:
+    - set_fact:
+        template_path: "{{ path }}"
 
-- debug:
-    msg: "{{ template.inventory }}"
+    - include_vars: "{{ path }}"
+
+  when: with_survey == False
+
+- name: get template vars with surveys
+  block:
+    - name: get path for template vars
+      find:
+        path: "{{ path }}"
+      register: paths
+
+    - set_fact:
+        template_path: "{{ paths | regex_search('_template\.yml') }}"
+
+    - debug:
+        msg: "{{ template_path }}"
+  when: with_survey == True
 
 - name: get inventory_id
   block:

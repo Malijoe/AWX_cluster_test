@@ -22,7 +22,7 @@
     msg: "{{ survey_paths }}"
 
 - set_fact:
-    template_with_surveys: "{{ survey_paths.directories | map(attribute='path') | list }}"
+    templates_with_surveys: "{{ survey_paths.files | map(attribute='path') | list }}"
   when: survey_paths is defined
 
 - set_fact:
