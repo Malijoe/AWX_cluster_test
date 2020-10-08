@@ -31,8 +31,7 @@
         cred_id: "{{ creds | json_query(\"json.results[?name=='\" + project.credential + \"'].id\") | first }}"
   when: project.credential is defined and project.credential != ""
 
-- name: set project name to git repo name
-  set_fact:
+- set_fact:
     project_name: "{{ project.scm_url | regex_search('([^\/]+)(?=\.\w+$)') }}"
 
 - debug:
