@@ -31,12 +31,9 @@
         cred_id: "{{ creds | json_query(\"json.results[?name=='\" + project.credential + \"'].id\") | first }}"
   when: project.credential is defined and project.credential != ""
 
-- debug:
-    msg: "{{ project.scm_url }}"
-
 - name: set project name as git repo name
   set_fact:
-    project_name: "{{ project.scm_url | regex_search('([^\/]+)(?=\.\w+$)') }}"
+    project_name: "{{ 'https://github.com/Malijoe/AWX_test_playbook.git' | regex_search('([^\/]+)(?=\.\w+$)') }}"
 
 - debug:
     msg: "{{ project_name }}"
