@@ -1,4 +1,7 @@
 ---
+- debug:
+    msg: "{{ with_survey }}"
+
 - name: get template vars without surveys
   block:
     - set_fact:
@@ -23,8 +26,16 @@
       loop: "{{ path_list }}"
       when: item | regex_search("_template\.yml")
 
+    - set_fact:
+        survey_path: "{{ item }}"
+      loop: "{{ path_list }}"
+      when: item | regex_search("_survey\.yml")
+
     - debug:
         msg: "{{ template_path }}"
+
+    - debug:
+        msg: "{{ survey_path }}"
   when: with_survey == True
 
 - name: get inventory_id
