@@ -1,37 +1,36 @@
 {
     {% if project.allow_override is defined and project.allow_override != "" %}
-    "allow_override": {{ project.allow_override }}
+    "allow_override": {{ project.allow_override }},
     {% else %}{% endif %}
     {% if cred_id is defined and cred_id != "" %}
-    "credential": {{ cred_id }}
+    "credential": {{ cred_id }},
     {% else %}{% endif %}
     {% if project.custom_virtualenv is defined and project.custom_virtualenv != "" %}
-    custom_virtualenv: "{{ project.custom_virtualenv }}"
+    custom_virtualenv: "{{ project.custom_virtualenv }}",
     {% else %}{% endif %}
     {% if project.description is defined and project.description != "" %}
-    "description": "{{ project.description }}"
+    "description": "{{ project.description }}",
     {% else %}{% endif %}
     {% if project.local_path is defined and project.local_path != "" %}
-    local_path: "{{ project.local_path }}"
+    local_path: "{{ project.local_path }}",
     {% else %}{% endif %}
-    "name": "{{ project.name }}"
-    "organization": "{{ org_id }}"
-    "scm_branch": "{{ project.scm_branch }}"
+    "name": "{{ project.name }}",
+    "organization": "{{ org_id }}",
+    "scm_branch": "{{ project.scm_branch }}",
     {% if project.scm_clean is defined and project.scm_clean != "" %}
-    "scm_clean": {{ project.scm_clean }}
+    "scm_clean": {{ project.scm_clean }},
     {% else %}{% endif %}
     {% if project.scm_delete_on_update is defined and project.scm_delete_on_update != "" %}
-    "scm_delete_on_update": {{ project.scm_delete_on_update }}
+    "scm_delete_on_update": {{ project.scm_delete_on_update }},
     {% else %}{% endif %}
-    "scm_type": {{ project.scm_type }}
+    "scm_type": {{ project.scm_type }},
     {% if project.scm_update_on_launch is defined and project.scm_update_on_launch != "" %}
-    "scm_update_on_launch": {{ project.scm_update_on_launch }}
+    "scm_update_on_launch": {{ project.scm_update_on_launch }},
     {% else %}{% endif %}
     {% if project.scm_update_cache_timeout is defined and project.scm_update_cache_timeout != "" %}
-    "scm_update_cache_timeout": {{ project.scm_update_cache_timeout }}
+    "scm_update_cache_timeout": {{ project.scm_update_cache_timeout }},
     {% else %}{% endif %}
-    "scm_url": "{{ project.scm_url }}"
-    {% if project.timeout is defined and project.timeout != "" %}
+    "scm_url": "{{ project.scm_url }}"{% if project.timeout is defined and project.timeout != "" %},
     "timeout": {{ project.timeout }}
     {% else %}{% endif %}
 }
