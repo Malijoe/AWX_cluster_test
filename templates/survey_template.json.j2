@@ -1,8 +1,8 @@
 {
-  "description": "{{ template.survey.description }}",
-  "name": "{{ template.survey.name }}",
+  "description": "{{ survey.description }}",
+  "name": "{{ survey.name }}",
   "spec": [
-    {% for spec in template.survey.spec %}
+    {% for spec in survey.spec %}
     {
       "type": "{{ spec.type }}",
       "question_name": "{{ spec.question_name }}",
