@@ -5,6 +5,7 @@
 - name: get contents of template folder
   find:
     path: "{{ template_directory }}"
+    recurse: yes
   register: template_contents
   when: template_directory is defined and template_directory != ""
 
