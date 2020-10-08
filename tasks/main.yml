@@ -15,15 +15,15 @@
   register: survey_paths
   when: template_directory is defined and template_directory != ""
 
-- set_fact:
-    template_with_surveys: "{{ survey_paths.directories | map(attribute='path') | list }}"
-  when: survey_paths is defined
+- debug:
+    msg: "{{ template_paths }}"
 
 - debug:
     msg: "{{ survey_paths }}"
 
-- debug:
-    msg: "{{ template_paths }}"
+- set_fact:
+    template_with_surveys: "{{ survey_paths.directories | map(attribute='path') | list }}"
+  when: survey_paths is defined
 
 - set_fact:
     template_config_paths: "{{ template_contents.files | map(attribute='path') | list }}"
