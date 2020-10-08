@@ -26,13 +26,17 @@
         password: "{{ awx_password }}"
       register: creds
 
-    - debug:
-        msg: "{{ creds }}"
-
     - name: retrieve cred_id for project.credentials
       set_fact:
         cred_id: "{{ creds | json_query(\"json.results[?name=='\" + project.credential + \"'].id\") | first }}"
   when: project.credential is defined and project.credential != ""
+
+- name: set project name to git repo name
+  set_fact:
+    project_name: "{{ project.scm_url | regex_search('([^\/]+)(?=\.\w+$)') }}"
+
+- debug:
+    msg: "{{ project_name }}"
 
 - name: template project_template
   template:
@@ -51,9 +55,6 @@
     status_code: 201, 400
   register: info
   when: org_id is defined
-
-- debug:
-    msg: "{{ info }}"
 
 - name: get project_id on status code 201
   set_fact:

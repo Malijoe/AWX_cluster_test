@@ -19,7 +19,6 @@
     status_code: 200, 201, 400
   register: survey_response
 
-- debug:
-    msg: "{{ survey_response }}"
+
 
 

@@ -1,7 +1,4 @@
 ---
-- debug:
-    msg: "{{ with_survey }}"
-
 - name: get template vars without surveys
   block:
     - set_fact:
@@ -28,11 +25,6 @@
       loop: "{{ path_list }}"
       when: item | regex_search("_survey\.yml")
 
-    - debug:
-        msg: "{{ template_path }}"
-
-    - debug:
-        msg: "{{ survey_path }}"
   when: with_survey == True
 
 - include_vars: "{{ template_path }}"
@@ -72,12 +64,6 @@
   until: response.status == 201 or (response.json.__all__ is defined and response.json.__all__ is search('already exists'))
   retries: 5
   delay: 10
-
-- debug:
-    msg: "{{ response }}"
-
-- debug:
-    msg: "{{ response.status }}"
 
 - name: get template_id on status code 201
   set_fact:
