@@ -34,6 +34,11 @@
         cred_id: "{{ creds | json_query(\"json.results[?name=='\" + project.credential + \"'].id\") | first }}"
   when: project.credential is defined and project.credential != ""
 
+- name: template project_template
+  template:
+    src: project_template.json.j2
+    dest: "{{ temp_dir }}/project_template.json"
+
 - name: create awx project
   uri:
     url: "{{ awx_url }}/api/v2/projects/"
@@ -42,12 +47,7 @@
     user: "{{ awx_user }}"
     password: "{{ awx_password }}"
     body_format: json
-    body:
-      name: "{{ project.name }}"
-      organization: "{{ org_id }}"
-      scm_branch: "{{ project.scm_branch }}"
-      scm_type: "{{ project.scm_type }}"
-      scm_url: "{{ project.scm_url }}"
+    body: "{{ lookup('file', '{{ temp_dir }}/project_template.json') }}"
     status_code: 201, 400
   register: info
   when: org_id is defined
