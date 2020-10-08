@@ -35,7 +35,7 @@
         msg: "{{ survey_path }}"
   when: with_survey == True
 
-- include_tasks: template_path
+- include_tasks: "{{ template_path }}"
 
 - name: get inventory_id
   block:
