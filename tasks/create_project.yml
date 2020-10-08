@@ -33,7 +33,9 @@
 
 - debug:
     msg: "{{ project.scm_url }}"
-- set_fact:
+
+- name: set project name as git repo name
+  set_fact:
     project_name: "{{ project.scm_url | regex_search('([^\/]+)(?=\.\w+$)') }}"
 
 - debug:
