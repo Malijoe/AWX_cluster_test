@@ -15,7 +15,7 @@
     local_path: "{{ project.local_path }}"
     {% else %}{% endif %}
     "name": "{{ project.name }}"
-    "organization": "{{ organization_id }}"
+    "organization": "{{ org_id }}"
     "scm_branch": "{{ project.scm_branch }}"
     {% if project.scm_clean is defined and project.scm_clean != "" %}
     "scm_clean": {{ project.scm_clean }}
