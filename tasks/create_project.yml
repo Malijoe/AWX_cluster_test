@@ -35,9 +35,6 @@
   set_fact:
     project_name: '{{ project.scm_url | regex_search("([^\/]+)(?=\.\w+$)") }}'
 
-- debug:
-    msg: "{{ project_name }}"
-
 - name: template project_template
   template:
     src: project_template.json.j2
