@@ -109,9 +109,9 @@
     password: "{{ awx_password }}"
     body_format: json
     body:
-      name: "{{ survey.name }}"
-      description: "{{ survey.description }}"
-      rrule: "{{ survey.rrule }}"
+      name: "{{ schedule.name }}"
+      description: "{{ schedule.description }}"
+      rrule: "{{ schedule.rrule }}"
 
 - name: create survey when it's defined
   include_tasks: create_survey.yml
