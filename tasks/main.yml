@@ -2,32 +2,33 @@
 - name: consume service.yml
   include_vars: service.yml
 
-- name: get contents of template folder
-  find:
+- name: check for existence of template folder
+  stat:
     path: "{{ template_directory }}"
-  register: template_paths
+  register: dirStat
   when: template_directory is defined and template_directory != ""
 
-- name: check for templates with surveys
-  find:
-    path: "{{ template_directory }}"
-    file_type: directory
-  register: survey_paths
-  when: template_directory is defined and template_directory != ""
+- name: get template paths when template_directory exists
+  block:
+    - name: get contents of template folder
+      find:
+        path: "{{ template_directory }}"
+      register: template_paths
 
-- debug:
-    msg: "{{ template_paths }}"
+    - name: check for templates with surveys
+      find:
+        path: "{{ template_directory }}"
+        file_type: directory
+      register: survey_paths
 
-- debug:
-    msg: "{{ survey_paths }}"
+    - set_fact:
+        templates_with_surveys: "{{ survey_paths.files | map(attribute='path') | list }}"
+      when: survey_paths is defined
 
-- set_fact:
-    templates_with_surveys: "{{ survey_paths.files | map(attribute='path') | list }}"
-  when: survey_paths is defined
-
-- set_fact:
-    template_config_paths: "{{ template_paths.files | map(attribute='path') | list }}"
-  when: template_paths is defined
+    - set_fact:
+        template_config_paths: "{{ template_paths.files | map(attribute='path') | list }}"
+      when: template_paths is defined
+  when: dirStat.exists == True
 
 - fail:
     msg: "Please set the awx_url variable and try again"

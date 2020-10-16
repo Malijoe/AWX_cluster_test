@@ -19,6 +19,29 @@
     status_code: 200, 201, 400
   register: survey_response
 
+- name: status code 201 or 200
+  debug:
+    msg: " Survey created successfully"
+  when: survey_response.status == 201 or survey_response.status == 200
 
+- name: status code 400
+  block:
+
+    - name: get response message
+      set_fact:
+        response_message: "{{ survey_response.json }}"
+
+    - name: adjust for when project already exists
+      block:
+        - debug:
+            msg: "{{ response_message.__all__ }} Task will continue anyway"
+
+      when: response_message.__all__ is defined and response_message.__all__ is search('already exists')
+
+    - fail:
+        msg: "{{ response_message }}"
+      when: response_message.__all__ is not defined or ((response_message.__all__ is search('already exists')) != True)
+
+  when: response.status == 400
 
 

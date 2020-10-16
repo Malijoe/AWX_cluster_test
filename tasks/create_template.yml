@@ -101,6 +101,17 @@
       when: response_message.__all__ is not defined or ((response_message.__all__ is search('already exists')) != True)
 
   when: response.status == 400
+- name: make a schedule
+  uri:
+    url: "{{ awx_url }}/api/v2//{{ template_id }}/schedules"
+    method: POST
+    user: "{{ awx_user }}"
+    password: "{{ awx_password }}"
+    body_format: json
+    body:
+      name: "{{ survey.name }}"
+      description: "{{ survey.description }}"
+      rrule: "{{ survey.rrule }}"
 
 - name: create survey when it's defined
   include_tasks: create_survey.yml
