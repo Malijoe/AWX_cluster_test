@@ -28,7 +28,7 @@
     - set_fact:
         template_config_paths: "{{ template_paths.files | map(attribute='path') | list }}"
       when: template_paths is defined
-  when: dirStat.exists == True
+  when: dirStat.stat.exists == True
 
 - fail:
     msg: "Please set the awx_url variable and try again"
