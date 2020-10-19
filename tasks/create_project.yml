@@ -72,7 +72,7 @@
 
         - name: List projects
           uri:
-            url: "{{ awx_url }}/api/v2/projects/"
+            url: "{{ awx_url }}/api/v2/projects"
             method: GET
             force_basic_auth: yes
             user: "{{ awx_user }}"
@@ -81,7 +81,7 @@
 
         - name: get project_id
           set_fact:
-            project_id: "{{ prjs | json_query(\"json.results[?name=='\" + project.name + \"'].id\") | first }}"
+            project_id: "{{ prjs | json_query(\"json.results[?name=='\" + project_name + \"'].id\") | first }}"
       when: response_message.__all__ is defined and response_message.__all__ is search('already exists')
 
     - fail:
