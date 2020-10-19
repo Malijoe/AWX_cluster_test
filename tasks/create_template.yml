@@ -106,6 +106,7 @@
   uri:
     url: "{{ awx_url }}/api/v2/job_templates/{{ template_id }}/schedules/"
     method: POST
+    force_basic_auth: yes
     user: "{{ awx_user }}"
     password: "{{ awx_password }}"
     body_format: json
