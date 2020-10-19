@@ -104,7 +104,7 @@
 
 - name: make a schedule
   uri:
-    url: "{{ awx_url }}/api/v2/job_templates/{{ template_id }}/schedules"
+    url: "{{ awx_url }}/api/v2/job_templates/{{ template_id }}/schedules/"
     method: POST
     user: "{{ awx_user }}"
     password: "{{ awx_password }}"
