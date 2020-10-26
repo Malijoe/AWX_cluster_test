@@ -115,6 +115,19 @@
       description: "{{ schedule.description }}"
       rrule: "{{ schedule.rrule }}"
 
+- name: make notification
+  uri:
+    url: "{{ awx_url }}/api/v2/job_templates/{{ template_id }}/notification_templates_error/"
+    method: POST
+    force_basic_auth: yes
+    user: "{{ awx_user }}"
+    password: "{{ awx_password }}"
+    body_format: json
+    body:
+      name: "test notification"
+      organization: "{{ org_id }}"
+      notification_type: email
+
 - name: create survey when it's defined
   include_tasks: create_survey.yml
   when: with_survey == True and survey_path is defined
