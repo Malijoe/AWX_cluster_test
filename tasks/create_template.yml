@@ -8,9 +8,9 @@
   when: with_survey == True
 
 - debug:
-    msg: "{{ paths.files }}"
+    msg: "{{ path_list }}"
   vars:
-#    path_list: "{% if with_survey == True is defined %}{{paths.files | map(attribute='path') | list }}{% else %}{% endif %}"
+    path_list: "{% if with_survey == True is defined %}{{paths.files | map(attribute='path') | list }}{% else %}{% endif %}"
 #    template_path: '{% if with_survey == False %}{{ path }}{% elif with_survey == True %}{{ path_list | select("match", "_template\.yml") | list |first }}{% else %}{% endif %}'
 
 - name: create job_template
