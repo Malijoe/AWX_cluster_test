@@ -1,6 +1,6 @@
 ---
 
-- name: get org_id
+- name: gather info
   block:
     - name: list organizations
       uri:
@@ -52,6 +52,9 @@
     status_code: 201, 400
   register: info
   when: org_id is defined
+  vars:
+    org_id: "{{ orgs | json_query(\"json.results[?name=='\" + project.organization + \"'].id\") | first }}"
+    cred_id: "{% if creds is defined %}{{ creds | json_query(\"json.results[?name=='\" + project.credential + \"'].id\") | first }}{% else %}{% endif %}"
 
 - name: get project_id on status code 201
   set_fact:
@@ -60,10 +63,6 @@
 
 - name: get project_id on status code 400
   block:
-
-    - name: get response message
-      set_fact:
-        response_message: "{{ info.json }}"
 
     - name: adjust for when project already exists
       block:
@@ -78,10 +77,6 @@
             user: "{{ awx_user }}"
             password: "{{ awx_password }}"
           register: prjs
-
-        - name: get project_id
-          set_fact:
-            project_id: "{{ prjs | json_query(\"json.results[?name=='\" + project_name + \"'].id\") | first }}"
       when: response_message.__all__ is defined and response_message.__all__ is search('already exists')
 
     - fail:
@@ -89,29 +84,30 @@
       when: response_message.__all__ is not defined or ((response_message.__all__ is search('already exists')) != True)
 
   when: info.status == 400
+  vars:
+    response_message: "{{ info.json }}"
 
 - name: create templates w/o surveys
   block:
-    - set_fact:
-        with_survey: False
 
     - name: create templates
       include_tasks: create_template.yml
       loop: "{{ template_config_paths }}"
       loop_control:
         loop_var: path
-
-  when: template_config_paths is defined
-
-- name: create templates w/ surveys
-  block:
-    - set_fact:
-        with_survey: True
+      vars:
+        with_survey: False
+      when: template_config_paths is defined
 
     - name: create templates
       include_tasks: create_template.yml
       loop: "{{ templates_with_surveys }}"
       loop_control:
         loop_var: path
+      vars:
+        with_survey: True
+      when: templates_with_surveys is defined
 
-  when: templates_with_surveys is defined
+  when: template_config_paths is defined or templates_with_surveys is defined
+  vars:
+    project_id: "{% if info.status == 201 %}{{ info.json.id }}{% elif info.status == 400 and info.json.__all__is defined and inf.json.__all__ is search('already exists') %}{{ prjs | json_query(\"json.results[?name=='\" + project_name + \"'].id\") | first }}{% else %}{% endif %}"
