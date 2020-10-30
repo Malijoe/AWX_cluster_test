@@ -110,4 +110,4 @@
 
   when: template_config_paths is defined or templates_with_surveys is defined
   vars:
-    project_id: "{% if info.status == 201 %}{{ info.json.id }}{% elif info.status == 400 and info.json.__all__is defined and inf.json.__all__ is search('already exists') %}{{ prjs | json_query(\"json.results[?name=='\" + project_name + \"'].id\") | first }}{% else %}{% endif %}"
+    project_id: "{% if info.status == 201 %}{{ info.json.id }}{% elif info.status == 400 and info.json.__all__ is defined and inf.json.__all__ is search('already exists') %}{{ prjs | json_query(\"json.results[?name=='\" + project_name + \"'].id\") | first }}{% else %}{% endif %}"
