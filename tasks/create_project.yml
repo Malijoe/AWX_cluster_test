@@ -55,7 +55,7 @@
       when: org_id is defined
   vars:
     org_id: "{{ orgs | json_query(\"json.results[?name=='\" + project.organization + \"'].id\") | first }}"
-    cred_id: "{% if creds is defined %}{{ creds | json_query(\"json.results[?name=='\" + project.credential + \"'].id\") | first }}{% else %}{% endif %}"
+    cred_id: "{% if project.credential is defined and project.credential != '' %}{{ creds | json_query(\"json.results[?name=='\" + project.credential + \"'].id\") | first }}{% else %}{% endif %}"
 
 - name: get project_id on status code 201
   set_fact:
