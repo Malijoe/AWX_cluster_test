@@ -2,6 +2,10 @@
 - name: consume service.yml
   include_vars: service.yml
 
+- fail:
+    msg: "Please set the awx_url variable and try again"
+  when: awx_url is not defined
+
 - name: check for existence of template folder
   stat:
     path: "{{ template_directory }}"
@@ -21,18 +25,7 @@
         file_type: directory
       register: survey_paths
 
-    - set_fact:
-        templates_with_surveys: "{{ survey_paths.files | map(attribute='path') | list }}"
-      when: survey_paths is defined
-
-    - set_fact:
-        template_config_paths: "{{ template_paths.files | map(attribute='path') | list }}"
-      when: template_paths is defined
   when: dirStat.stat.exists == True
-
-- fail:
-    msg: "Please set the awx_url variable and try again"
-  when: awx_url is not defined
 
 - name: set temp_dir
   set_fact:
@@ -46,3 +39,7 @@
 
 - name: Create project
   include_tasks: create_project.yml
+  vars:
+    templates_with_surveys: "{% if survey_paths.files != [] %}{{ survey_paths.files | map(attribute='path') | list }}{% else %}{% endif %}"
+    template_configg_paths: "{% if template_paths.files != [] %}{{ template_paths.files | map(attribute='path') | list }}{% else %}{% endif %}"
+
