@@ -10,7 +10,7 @@
 - include_vars: "{{ template_path }}"
   vars:
     path_list: "{% if with_survey == True is defined %}{{paths.files | map(attribute='path') | list }}{% else %}{% endif %}"
-    template_path: "{% if with_survey == False %}{{ path }}{% elif paths is defined %}{{ path_list | select('match', '_template\.yml') | list |first }}{% else %}{% endif %}"
+    template_path: '{% if with_survey == False %}{{ path }}{% elif paths is defined %}{{ path_list | select("match", "_template\.yml") | list |first }}{% else %}{% endif %}'
 
 - name: create job_template
   block:
