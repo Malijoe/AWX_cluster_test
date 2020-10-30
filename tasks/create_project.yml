@@ -11,12 +11,6 @@
         password: "{{ awx_password }}"
       register: orgs
 
-    - name: retrieve org id for project.organization
-      set_fact:
-        org_id: "{{ orgs | json_query(\"json.results[?name=='\" + project.organization + \"'].id\") | first }}"
-
-- name: get credential_id
-  block:
     - name: list credentials
       uri:
         url: "{{ awx_url }}/api/v2/credentials"
@@ -25,33 +19,40 @@
         user: "{{ awx_user }}"
         password: "{{ awx_password }}"
       register: creds
+      when: project.credential is defined and project.credential != ""
 
-    - name: retrieve cred_id for project.credentials
-      set_fact:
-        cred_id: "{{ creds | json_query(\"json.results[?name=='\" + project.credential + \"'].id\") | first }}"
-  when: project.credential is defined and project.credential != ""
+    - name: get inventory info
+      uri:
+        url: "{{ awx_url }}/api/v2/inventories/"
+        method: GET
+        force_basic_auth: yes
+        user: "{{ awx_user }}"
+        password: "{{ awx_password }}"
+      register: inventories
 
 - name: set project name as git repo name
   set_fact:
     project_name: '{{ project.scm_url | regex_search("([^\/]+)(?=\.\w+$)") }}'
 
-- name: template project_template
-  template:
-    src: project_template.json.j2
-    dest: "{{ temp_dir }}/project_template.json"
+- name: create project
+  block:
+    - name: template project_template
+      template:
+        src: project_template.json.j2
+        dest: "{{ temp_dir }}/project_template.json"
 
-- name: create awx project
-  uri:
-    url: "{{ awx_url }}/api/v2/projects/"
-    method: POST
-    force_basic_auth: yes
-    user: "{{ awx_user }}"
-    password: "{{ awx_password }}"
-    body_format: json
-    body: "{{ lookup('file', '{{ temp_dir }}/project_template.json') }}"
-    status_code: 201, 400
-  register: info
-  when: org_id is defined
+    - name: API request to create project
+      uri:
+        url: "{{ awx_url }}/api/v2/projects/"
+        method: POST
+        force_basic_auth: yes
+        user: "{{ awx_user }}"
+        password: "{{ awx_password }}"
+        body_format: json
+        body: "{{ lookup('file', '{{ temp_dir }}/project_template.json') }}"
+        status_code: 201, 400
+      register: info
+      when: org_id is defined
   vars:
     org_id: "{{ orgs | json_query(\"json.results[?name=='\" + project.organization + \"'].id\") | first }}"
     cred_id: "{% if creds is defined %}{{ creds | json_query(\"json.results[?name=='\" + project.credential + \"'].id\") | first }}{% else %}{% endif %}"
@@ -82,7 +83,6 @@
     - fail:
         msg: "{{ response_message }}"
       when: response_message.__all__ is not defined or ((response_message.__all__ is search('already exists')) != True)
-
   when: info.status == 400
   vars:
     response_message: "{{ info.json }}"

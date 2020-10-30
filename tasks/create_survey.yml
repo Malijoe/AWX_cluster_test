@@ -1,4 +1,8 @@
 ---
+- fail:
+    msg: "{{ template_id }},{{survey_path}}"
+  when: test == True
+
 - include_vars: "{{ survey_path }}"
 
 - name: template survey json

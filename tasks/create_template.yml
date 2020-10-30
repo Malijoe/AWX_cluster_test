@@ -1,86 +1,44 @@
 ---
-- fail:
-    msg: "{{ project_id }}"
-  when: test == True
-
-- name: get template vars without surveys
-  block:
-    - set_fact:
-        template_path: "{{ path }}"
-  when: with_survey == False
-
 - name: get template vars with surveys
   block:
     - name: get path for template vars
       find:
         path: "{{ path }}"
       register: paths
-
-    - set_fact:
-        path_list: "{{ paths.files | map(attribute='path') | list }}"
-
-    - set_fact:
-        template_path: "{{ item }}"
-      loop: "{{ path_list }}"
-      when: item | regex_search("_template\.yml")
-
-    - set_fact:
-        survey_path: "{{ item }}"
-      loop: "{{ path_list }}"
-      when: item | regex_search("_survey\.yml")
-
   when: with_survey == True
 
 - include_vars: "{{ template_path }}"
+  vars:
+    path_list: "{% if paths is defined %}{{paths.files | map(attribute='path') | list }}{% else %}{% endif %}"
+    template_path: "{% if with_survey == False %}{{ path }}{% elif paths is defined %}{{ path_list | select('match', '_template\.yml') | list |first }}{% else %}{% endif %}"
 
-- name: get inventory_id
+- name: create job_template
   block:
-    - name: get inventory info
+    - name: template job_template
+      template:
+        src: jobTemplate_template.json.j2
+        dest: "{{ temp_dir }}/jobTemplate_template.json"
+        mode: '0777'
+
+    - name: API request to create job template
       uri:
-        url: "{{ awx_url }}/api/v2/inventories/"
-        method: GET
+        url: "{{ awx_url }}/api/v2/job_templates/"
+        method: POST
         force_basic_auth: yes
         user: "{{ awx_user }}"
         password: "{{ awx_password }}"
-      register: inventories
-
-    - name: Get inventory id using name
-      set_fact:
-        inventory_id: "{{ inventories | json_query(\"json.results[?name=='\" + template.inventory + \"'].id\") | first }}"
-
-- name: template job_template
-  template:
-    src: jobTemplate_template.json.j2
-    dest: "{{ temp_dir }}/jobTemplate_template.json"
-    mode: '0777'
-
-- name: create template
-  uri:
-    url: "{{ awx_url }}/api/v2/job_templates/"
-    method: POST
-    force_basic_auth: yes
-    user: "{{ awx_user }}"
-    password: "{{ awx_password }}"
-    body_format: json
-    body: "{{ lookup('file', '{{ temp_dir }}/jobTemplate_template.json') }}"
-    status_code: 201, 400
-  register: response
-  until: response.status == 201 or (response.json.__all__ is defined and response.json.__all__ is search('already exists'))
-  retries: 5
-  delay: 10
-
-- name: get template_id on status code 201
-  set_fact:
-    template_id: "{{ response.json.id }}"
-  when: response.status == 201
+        body_format: json
+        body: "{{ lookup('file', '{{ temp_dir }}/jobTemplate_template.json') }}"
+        status_code: 201, 400
+      register: response
+      until: response.status == 201 or (response.json.__all__ is defined and response.json.__all__ is search('already exists'))
+      retries: 5
+      delay: 10
+  vars:
+    inventory_id: "{{ inventories | json_query(\"json.results[?name=='\" + template.inventory + \"'].id\") | first }}"
 
 - name: get template_id on status code 400
   block:
-
-    - name: get response message
-      set_fact:
-        response_message: "{{ response.json }}"
-
     - name: adjust for when project already exists
       block:
         - debug:
@@ -95,9 +53,6 @@
             password: "{{ awx_password }}"
           register: tmps
 
-        - name: get project_id
-          set_fact:
-            template_id: "{{ tmps | json_query(\"json.results[?name=='\" + template.name + \"'].id\") | first }}"
       when: response_message.__all__ is defined and response_message.__all__ is search('already exists')
 
     - fail:
@@ -105,33 +60,13 @@
       when: response_message.__all__ is not defined or ((response_message.__all__ is search('already exists')) != True)
 
   when: response.status == 400
-
-- name: make a schedule
-  uri:
-    url: "{{ awx_url }}/api/v2/job_templates/{{ template_id }}/schedules/"
-    method: POST
-    force_basic_auth: yes
-    user: "{{ awx_user }}"
-    password: "{{ awx_password }}"
-    body_format: json
-    body:
-      name: "{{ schedule.name }}"
-      description: "{{ schedule.description }}"
-      rrule: "{{ schedule.rrule }}"
-
-- name: make notification
-  uri:
-    url: "{{ awx_url }}/api/v2/job_templates/{{ template_id }}/notification_templates_error/"
-    method: POST
-    force_basic_auth: yes
-    user: "{{ awx_user }}"
-    password: "{{ awx_password }}"
-    body_format: json
-    body:
-      name: "test notification"
-      organization: "{{ org_id }}"
-      notification_type: email
+  vars:
+    response_message: "{{ info.json }}"
 
 - name: create survey when it's defined
   include_tasks: create_survey.yml
-  when: with_survey == True and survey_path is defined
+  when: with_survey == True
+  vars:
+    path_list: "{% if paths is defined %}{{paths.files | map(attribute='path') | list }}{% else %}{% endif %}"
+    template_id: "{% if response.status == 201 %}{{response.jsone.id}}{% elif tmps is defined %}{{ tmps | json_query(\"json.results[?name=='\" + template.name + \"'].id\") | first }}{% else %}{% endif %}"
+    survey_path: "{% if paths is defined %}{{ path_list | select('match', '_survey\.yml') | list |first }}{% else %}{% endif %}"
